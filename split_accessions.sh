@@ -27,7 +27,7 @@ echo "RUNNING - $cmd1"
 $cmd1
 
 cmd2="/bin/sh $script_dir/exec_$runid.sh"
-echo "RUNNING - $cmd2"
-$cmd2
+echo "Command: $cmd2"
+# $cmd2
 
 
