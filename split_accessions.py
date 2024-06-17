@@ -58,14 +58,19 @@ for k in range(n_workloads):
     file_names.append((str(k) + "_" + runid + ".sh"))
     with open(file_names[-1], "w") as file:
         file.write("#!/bin/bash\n")
-        file.write("#SBATCH --partition=main\n")
-        file.write("#SBATCH --requeue\n")
-        file.write("#SBATCH --job-name=" + runid + "\n")
-        file.write("#SBATCH --ntasks=1\n")
-        file.write("#SBATCH --cpus-per-task=" + n_cores + "\n")
-        file.write("#SBATCH --mem=" + mem + "\n")
-        file.write("#SBATCH --time=" + max_runtime + "\n")
-        file.write("#SBATCH --output=" + runid + str(k) + ".log.txt\n")
+        file.write("\n")
+        file.write(f"#PBS -l select=1:ncpus={n_cores}:mem={mem}\n")
+        file.write(f"#PBS -l walltime={max_runtime}\n")
+        file.write(f"#PBS -N {k}_{runid}\n")
+        file.write("#PBS -j oe\n")
+        file.write(f"#PBS -o {work_dir}/{script_dir}\n")
+        file.write("#PBS -m abe\n")
+        file.write("#PBS -M ethan.bustad@seattlechildrens.org\n")
+        file.write("\n")
+        file.write("source ~/mambaforge/etc/profile.d/conda.sh\n")
+        file.write("conda activate fmtb_alignment\n")
+        file.write("\n")
+
         for line in groups[k]:
             file.write(line + "\n")
             #print(line)
@@ -75,8 +80,5 @@ for k in range(n_workloads):
 # write master script to submit all jobs
 with open("exec_" + runid + ".sh", "w") as file:
     for fn in file_names:
-        file.write("sbatch " + fn)
+        file.write("qsub " + fn)
         file.write("\n")
-        
-
-

@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Each job will have $1 cores and $2MB memory"
+echo "Each job will have $1 cores and $2 memory"
 echo "Will create $3 concurrent workloads"
 echo "Splitting accessions $4 into $3 groups"
 

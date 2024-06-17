@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Processing accession $1, allocated $2 cores and $3MB memory"
+echo "Processing accession $1, allocated $2 cores and $3 memory"
 echo "Working in dir: $4"
 echo "Removing adapters using: $5"
 echo "bowtie2 index prefix is: $6"
@@ -8,8 +8,11 @@ echo "featureCounts will use attribute: $8"
 echo "Unique tag for this run is: $9"
 
 module load java
-module load bowtie2
-module load samtools
+module load Bowtie2
+module load SAMtools
+module load biobuilds # fastqc
+module load sratoolkit # fasterq-dump
+module load subread # featureCounts
 
 exec_loc=$PWD
 
@@ -33,12 +36,12 @@ echo "$(date +"%Y-%m-%d %T") RUNNING - $command"
 $command
 
 # remove adapters (all illumina)
-command="/bin/sh bbduk.sh in=$1.fastq out=$1_c.fastq ref=$5 ktrim=r k=23 mink=11 hdist=1 stats=$1.bbdukstats tpe tbo"
+command="/bin/sh $CONDA_PREFIX/opt/bbmap*/bbduk.sh in=$1.fastq out=$1_c.fastq ref=$5 ktrim=r k=23 mink=11 hdist=1 stats=$1.bbdukstats tpe tbo"
 echo "$(date +"%Y-%m-%d %T") RUNNING - $command"
 $command
 
 # perform quality trimming using a sliding window of 4 bases, average q of 20
-command="java -jar $HOME/Trimmomatic-0.39/trimmomatic-0.39.jar SE -threads $2 $1_c.fastq $1_ct.fastq SLIDINGWINDOW:4:20"
+command="trimmomatic SE -threads $2 $1_c.fastq $1_ct.fastq SLIDINGWINDOW:4:20"
 echo "$(date +"%Y-%m-%d %T") RUNNING - $command"
 $command >> $1.trimmomaticstats 2>&1
 

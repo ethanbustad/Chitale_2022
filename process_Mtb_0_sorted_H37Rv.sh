@@ -1,25 +1,32 @@
-/bin/sh /scratch/as2654/build_compendium.0/split_accessions.sh \
+#!/bin/bash
+
+# activate conda/mamba environment with the following packages installed before invoking script:
+# bowtie2, bbmap, pandas, samtools, trimmomatic
+
+workdir="$1" # e.g. /active/ma_s/Ethan/HPC/FrontiersMtb_2024-06/build_compendium.0
+
+/bin/sh "$workdir"/split_accessions.sh \
     8 \
-    16000 \
+    16GB \
     8 \
-    /scratch/as2654/build_compendium.0/Mtb_0_sorted_H37Rv.tsv \
-    /scratch/as2654/build_compendium.0/work_dir_NCBI \
+    "$workdir"/Mtb_0_sorted_H37Rv.tsv \
+    "$workdir"/work_dir_NCBI \
     48:30:00 \
     GCF_000195955.2_ASM19595v2_genomic \
     GCF_000195955.2_ASM19595v2_genomic.gtf \
-    $HOME/bbmap/resources/adapters.fa \
+    $CONDA_PREFIX/opt/bbmap*/resources/adapters.fa \
     gene \
     _NCBI
 
-/bin/sh split_accessions.sh \
+/bin/sh "$workdir"/split_accessions.sh \
     8 \
-    16000 \
+    16GB \
     12 \
-    /scratch/as2654/build_compendium.0/Mtb_0_sorted_H37Rv.tsv \
-    /scratch/as2654/build_compendium.0/work_dir_AllandRv \
+    "$workdir"/Mtb_0_sorted_H37Rv.tsv \
+    "$workdir"/work_dir_AllandRv \
     48:30:00 \
     H37Rv_Alland \
     H37Rv_Alland.gtf \
-    $HOME/bbmap/resources/adapters.fa \
+    $CONDA_PREFIX/opt/bbmap*/resources/adapters.fa \
     transcript \
     _AllandRv
