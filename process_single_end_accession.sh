@@ -10,9 +10,24 @@ echo "Unique tag for this run is: $9"
 module load java
 module load Bowtie2
 module load SAMtools
+module load apptainer
 module load biobuilds # fastqc
-module load sratoolkit # fasterq-dump
+# module load sratoolkit # fasterq-dump
 module load subread # featureCounts
+
+function fasterq_dump() { # sratoolkit has handshake issues on Children's intranet; the container doesn't
+	if [ ! -f ~/apptainer/sra-tools_3.0.0.sif ]
+	then
+		mkdir -p ~/apptainer
+		apptainer pull --dir ~/apptainer/ docker://ncbi/sra-tools:3.0.0
+	fi
+
+	apptainer exec \
+		--bind $PWD:/data \
+		--pwd /data \
+		~/apptainer/sra-tools_3.0.0.sif \
+		fasterq-dump "$@"
+}
 
 exec_loc=$PWD
 
@@ -22,7 +37,7 @@ echo "$(date +"%Y-%m-%d %T") RUNNING $command"
 $command
 
 # download the accession
-command="fasterq-dump --threads $2 $1"
+command="fasterq_dump --threads $2 $1"
 echo "$(date +"%Y-%m-%d %T") RUNNING - $command"
 $command
 
